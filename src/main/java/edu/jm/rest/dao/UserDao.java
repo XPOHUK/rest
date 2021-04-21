@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 
 public interface UserDao {
-   void add(User user);
+   User add(User user);
    List<User> listUsers();
    User getUserById(long id);
    void updateUser(User user);

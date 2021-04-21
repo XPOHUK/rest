@@ -14,7 +14,6 @@ public class User implements UserDetails {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
-
    private String password;
    private String firstName;
    private String lastName;
@@ -26,7 +25,7 @@ public class User implements UserDetails {
    private boolean isAccountNonLocked;
    private boolean isCredentialsNonExpired;
 
-   @ManyToMany(cascade = {CascadeType.ALL})
+   @ManyToMany
    @JoinTable(
            name = "user_roles",
            joinColumns = { @JoinColumn(name = "user_id")},
@@ -82,9 +81,9 @@ public class User implements UserDetails {
       this.age = age;
    }
 
-   public String getEmail() {
+   /*public String getEmail() {
       return email;
-   }
+   }*/
 
    public void setEmail(String email) {
       this.email = email;
@@ -99,9 +98,9 @@ public class User implements UserDetails {
       this.password = password;
    }
 
-   public Set<Role> getRoles() {
+   /*public Set<Role> getRoles() {
       return roles;
-   }
+   }*/
 
    public void setRoles(Set<Role> roles) {
       this.roles = roles;

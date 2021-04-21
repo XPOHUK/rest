@@ -49,7 +49,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         user.setAge(100);
         user.setRoles(new HashSet<>(Arrays.asList(adminRole)));
         user.setPassword("admin");
-        userService.createUser(user);
+        if (userService.validateUser(user).isEmpty())
+            userService.createUser(user);
         alreadySetup = true;
     }
 

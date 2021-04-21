@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserService {
-    void createUser(UserDto user);
+    User createUser(UserDto user);
     List<User> listUsers();
     void removeUser(User user);
     void updateUser(User user);
