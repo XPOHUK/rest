@@ -6,6 +6,8 @@ import edu.jm.rest.model.UserDto;
 import edu.jm.rest.service.RoleService;
 import edu.jm.rest.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
@@ -30,6 +32,12 @@ public class MyRestController {
         return userService.listUsers();
     }
 
+    @GetMapping("/user")
+    public User getUser(UsernamePasswordAuthenticationToken token, ModelMap model){
+        User user1 = (User) token.getPrincipal();
+        return user1;
+    }
+
     @DeleteMapping("/users/{id}")
     public void deleteUser(@PathVariable Long id){
         System.out.println("User for del " + id);
@@ -44,6 +52,21 @@ public class MyRestController {
                 .map(role -> roleService.getRoleByName(role.getRole()))
                 .collect(Collectors.toList())));
         return userService.createUser(newUser);
+    }
+
+    @PutMapping("/users/{id}")
+    public User updateUser(@RequestBody UserDto editedUser, @PathVariable Long id){
+        User persUser = userService.getUserById(id);
+        persUser.setFirstName(editedUser.getFirstName());
+        persUser.setLastName(editedUser.getLastName());
+        persUser.setAge(editedUser.getAge());
+        if (!editedUser.getPassword().isEmpty()){
+            persUser.setPassword(userService.getPasswordEncoder().encode(editedUser.getPassword()));
+        }
+        persUser.setRoles(new HashSet<>(editedUser.getRoles().stream()
+                .map(role -> roleService.getRoleByName(role.getRole()))
+                .collect(Collectors.toList())));
+        return userService.updateUser(persUser);
     }
 
     @GetMapping("/roles")

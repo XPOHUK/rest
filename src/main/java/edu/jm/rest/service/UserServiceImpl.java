@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(User user) {
-        userDao.updateUser(user);
+    public User updateUser(User user) {
+        return userDao.updateUser(user);
     }
 
     @Override
@@ -83,4 +83,7 @@ public class UserServiceImpl implements UserService {
         return errorMap;
     }
 
+    public BCryptPasswordEncoder getPasswordEncoder(){
+        return this.passwordEncoder;
+    }
 }

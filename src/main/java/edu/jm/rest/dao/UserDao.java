@@ -10,7 +10,7 @@ public interface UserDao {
    User add(User user);
    List<User> listUsers();
    User getUserById(long id);
-   void updateUser(User user);
+   User updateUser(User user);
    void removeUser(User user);
    UserDetails getUserByEmail(String email);
 }

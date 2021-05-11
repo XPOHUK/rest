@@ -45,7 +45,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         for (final GrantedAuthority grantedAuthority : authorities) {
             String authorityName = grantedAuthority.getAuthority();
             if(authorityName.equals("ROLE_USER")) {
-                return "/user";
+                return "/users";
             }
         }
 

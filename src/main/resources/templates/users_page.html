@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
-      xmlns:sec="http://www.w3.org/1999/xhtml">
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -11,26 +11,32 @@
     <script th:src="@{/js/main.js}"></script>
 </head>
 <body>
-<header>
-    Header
+<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <div id="header" sec:authorize="isAuthenticated()">
+        <span sec:authentication="name"></span>
+        <span> with roles: </span>
+        <span sec:authentication="authorities"></span>
+    </div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" class="btn btn-secondary" value="Logout">
+    </form>
 </header>
 <div class="container">
     <div class="row">
         <div class="col-md-2">
             <nav>
-                <ul class="nav flex-column nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Admin</a>
+                <ul class="nav flex-column nav-pills" id="myPills">
+                    <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item" role="presentation">
+                        <button  class="nav-link active" id="pills-admin-tab" data-bs-toggle="pill" data-bs-target="#pills-admin" type="button" role="tab" aria-controls="pills-admin" aria-selected="true" >Admin</button>
                     </li>
-                </ul>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">User</a>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-user-tab" data-bs-toggle="pill" data-bs-target="#pills-user" type="button" role="tab" aria-controls="pills-user" aria-selected="false">User</button>
                     </li>
                 </ul>
             </nav>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-10 tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-admin" role="tabpanel" aria-labelledby="pills-admin-tab">
             <h2>Admin panel</h2>
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -54,7 +60,8 @@
                             <th scope="col">Last Name</th>
                             <th scope="col">Age</th>
                             <th scope="col">Role</th>
-                            <th scope="col">Action</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
                         </tr>
                         </thead>
 
@@ -119,8 +126,104 @@
                     <input type="submit" value="Add User" form="createUserForm"/>
                 </div>
             </div>
+            </div>
+            <div class="tab-pane fade" id="pills-user" role="tabpanel" aria-labelledby="pills-user-tab">
+                <h2>You are...</h2>
+                <table border="1" th:object="${user}">
+                    <tbody>
+                    <tr>
+                        <td>First Name: </td>
+                        <td th:text="*{firstName}"></td>
+                    </tr>
+                    <tr>
+                        <td>Last Name: </td>
+                        <td th:text="*{lastName}"></td>
+                    </tr>
+                    <tr>
+                        <td>Age: </td>
+                        <td th:text="*{age}"></td>
+                    </tr>
+                    <tr>
+                        <td>E-Mail: </td>
+                        <td th:text="*{username}"></td>
+                    </tr>
+                    <tr>
+                        <td>Role</td>
+                        <td><span th:each="authority : *{authorities}" th:text="${authority.authority} + ' '">[role]</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
+    </div>
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-2">
+                                <label for="editFirstName" class="col-form-label">First Name</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="editFirstName" class="form-control" name="firstName">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-2">
+                                <label for="editLastName" class="col-form-label">Last Name</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="text" id="editLastName" class="form-control" name="lastName">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-2">
+                                <label for="editAge" class="col-form-label">Age</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="number" id="editAge" class="form-control" name="age">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-2">
+                                <label for="editEmail" class="col-form-label">Email</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="email" id="editEmail" class="form-control" name="email">
+                            </div>
+                        </div>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-2">
+                                <label for="editPassword" class="col-form-label">Password</label>
+                            </div>
+                            <div class="col-sm-10">
+                                <input type="password" id="editPassword" class="form-control" name="password">
+                            </div>
+                        </div>
+                        <input type="hidden" id="editId" name="id">
+                    </form>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-sm-2">
+                            <label for="editSelectRoles" class="col-form-label">Roles</label>
+                        </div>
+                        <div class="col-sm-10">
+                            <select  multiple class="form-select" id="editSelectRoles" name="roles">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeModalBtn" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="editUserForm">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
