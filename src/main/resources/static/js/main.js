@@ -1,5 +1,4 @@
 window.onload = function() {
-    console.log("blia");
     isAdmin();
 };
 

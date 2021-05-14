@@ -6,6 +6,8 @@ import edu.jm.rest.model.UserDto;
 import edu.jm.rest.service.RoleService;
 import edu.jm.rest.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -28,34 +30,32 @@ public class MyRestController {
     }
 
     @GetMapping("/users")
-    public List<User> getUsers(){
-        return userService.listUsers();
+    public ResponseEntity<List<User>> getUsers(){
+        return new ResponseEntity<>(userService.listUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/user")
-    public User getUser(UsernamePasswordAuthenticationToken token, ModelMap model){
+    public ResponseEntity<User> getUser(UsernamePasswordAuthenticationToken token, ModelMap model){
         User user1 = (User) token.getPrincipal();
-        return user1;
+        return new ResponseEntity<>(user1, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id){
-        System.out.println("User for del " + id);
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
         userService.removeUser(userService.getUserById(id));
+        return new ResponseEntity<>("User deleted", HttpStatus.OK);
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody UserDto newUser){
-        //TODO Добавить валидацию через userService.validateUser
-        System.out.println(newUser);
+    public ResponseEntity<User> createUser(@RequestBody UserDto newUser){
         newUser.setRoles(new HashSet<>(newUser.getRoles().stream()
                 .map(role -> roleService.getRoleByName(role.getRole()))
                 .collect(Collectors.toList())));
-        return userService.createUser(newUser);
+        return new ResponseEntity<>(userService.createUser(newUser), HttpStatus.OK);
     }
 
     @PutMapping("/users/{id}")
-    public User updateUser(@RequestBody UserDto editedUser, @PathVariable Long id){
+    public ResponseEntity<User> updateUser(@RequestBody UserDto editedUser, @PathVariable Long id){
         User persUser = userService.getUserById(id);
         persUser.setFirstName(editedUser.getFirstName());
         persUser.setLastName(editedUser.getLastName());
@@ -66,11 +66,11 @@ public class MyRestController {
         persUser.setRoles(new HashSet<>(editedUser.getRoles().stream()
                 .map(role -> roleService.getRoleByName(role.getRole()))
                 .collect(Collectors.toList())));
-        return userService.updateUser(persUser);
+        return new ResponseEntity<>(userService.updateUser(persUser), HttpStatus.OK);
     }
 
     @GetMapping("/roles")
-    public List<Role> getRoles(){
-        return roleService.getAllRoles();
+    public ResponseEntity<List<Role>> getRoles(){
+        return new ResponseEntity<>(roleService.getAllRoles(), HttpStatus.OK);
     }
 }
